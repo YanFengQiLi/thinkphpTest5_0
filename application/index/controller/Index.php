@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use app\index\model\User;
 use think\Controller;
 use think\Loader;
 use think\Request;
@@ -24,7 +25,7 @@ class Index extends Controller
      *         需要在对应的模块下创建validate文件夹,并在该文件夹下创建对应的类文件，此类必须继承think\validate类
      *         实例化验证器
      *         (1)、可以使用Loader::validate('验证器名称')
-     *         (2)、
+     *         (2)、使用助手函数validate('验证器名称')
      */
     public function registerUser(Request $request){
         header('Content-type:text/html;charset=UTF-8');
@@ -49,12 +50,21 @@ class Index extends Controller
          *      --2、1使用loader类实例化验证器
          *      --2、2使用助手函数实例化验证器
          * */
+        $data = $request->post();
         $validate = Loader::validate('User');
         //$validate = validate('User');
-        $data = $request->post();
-        if(!$validate->check($data)){
+
+        //使用场景验证
+        if(!$validate->scene('edit')->check($data)){
             dump($validate->getError());
+        }else{
+            echo '注册成功';
         }
+
+        //不使用场景验证
+        /*if(!$validate->check($data)){
+            dump($validate->getError());
+        }*/
     }
 
     /**
@@ -90,6 +100,63 @@ class Index extends Controller
 
         if(!$validate->check($data)){
             dump($validate->getError());
+        }
+    }
+
+    /**
+     * @author 作者
+     * @date 2018/7/7 13:16
+     *  验证器在控制器中使用：
+     *      1、单纯的在控制器中使用:通过调用父类validate方法使用
+     *      2、**********************定义验证器，调用父类validate方法----最为推荐的方法******************
+     */
+    public function useControllerValidate(){
+        header('Content-type:text/html;charset=UTF-8');
+        //方法1:
+        $data = [
+            'name' => 121212,
+            'age'  => 11111
+        ];
+        /*$msg = [
+            'name' => '姓名长度在5~10位字符',
+            'age'  => '年龄只能为数字'
+        ];
+        $result = $this->validate($data,
+            [
+                'name' => 'require|min:5|max:10',
+                'age'  => 'integer|max:3'
+            ],
+            $msg
+        );
+        if($result !== true){
+            dump($result);
+        }*/
+
+
+        //方法2  如果存在场景使用：验证类.场景名  否则直接传递验证类名
+        $result = $this->validate($data,'User.edit');
+        if($result !== true){
+            dump($result);
+        }
+    }
+
+    /**
+     * @author 作者
+     * @date 2018/7/7 17:07
+     * 使用模型验证说明：
+     *        1、如果模型名与验证类名一致：直接传入true，否则传入验证类名
+     *        2、如果要加上使用 场景： 验证类名 . 场景名
+     */
+    public function useModelValidate(){
+        $data = [
+            'username' => 'z123456',
+            'email'  => 11111
+        ];
+        $user = new User();
+        $result = $user->validate(true)->save($data);
+
+        if($result !== true){
+            dump($user->getError());
         }
     }
 }

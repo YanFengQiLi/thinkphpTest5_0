@@ -15,14 +15,37 @@ class User extends Validate{
         'username' => ['require','regex'=>'/^[a-zA-Z0-9]{6,10}$/','checkUserName'=>'zhangsan'],
         'email' => ['require','email'],
         'mobile' => ['regex' => '0?(13|14|15|17|18|19)[0-9]{9}'],
-        'password' => ['require','regex'=>'/^[a-zA-Z0-9]{6,10}$/']
+        'password' => ['require','regex'=>'/^[a-zA-Z0-9]{6,10}$/'],
+        //令牌验证规则
+        //'__token__' => 'token'
     ];
     //错误提示信息
     protected $message = [
         'username' => '用户名由字母和数字组成,长度在5~15位',
         'email' => '邮箱不合法',
         'mobile' => '手机号不合法',
-        'password' => '密码由字母和数字组成,长度在6~20位'
+        'password' => '密码由字母和数字组成,长度在6~20位',
+        //表单令牌验证
+        //'__token__' => '页面已经过期'
+    ];
+
+    /**
+     * @var array
+     *  验证场景
+     *  key:场景标示字段,自定义
+     *  value:需要验证的字段名称
+     */
+    protected  $scene = [
+        //使用原有的验证规则
+//        'edit'  => ['username','email']
+
+        //对某些字段规则进行重新设置
+        'edit'  => [
+            'username'  => ['require','min'=>5,'max'=>10],
+            'email' => 'checkEmail',
+            //表单令牌验证
+            //'__token__' => 'token'
+        ]
     ];
 
     /*
@@ -35,4 +58,11 @@ class User extends Validate{
     protected function checkUserName($value,$rule,$data){
         return $value != $rule ? true : '用户名已经存在';
     }
+
+    //edit场景使用的回调
+    protected function checkEmail($value){
+        return $value == '123@qq.com' ? true : false;
+    }
+
+
 }
