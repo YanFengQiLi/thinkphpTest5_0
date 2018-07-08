@@ -1,6 +1,23 @@
 <?php
 return [
     'app_debug'              => true,
+    /*
+     *  普通模式(默认)
+     *      url_route_on：false
+     *  混合模式
+     *      url_route_on：true
+     *      url_route_must:false
+     *  强制模式
+     *      url_route_on：true
+     *      url_route_must:true
+     * */
+    'url_route_on'           => true,
+    'url_route_must'=>  false,
+    //加载路由文件数组  可以添加多个路由文件，默认是route.php
+    'route_config_file' => [
+        'route',
+        'route_my'
+    ],
     //数据库配置
     'database'               => [
         // 数据库类型
