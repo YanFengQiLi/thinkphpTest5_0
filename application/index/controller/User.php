@@ -7,7 +7,26 @@ use app\index\model\User as UserModel;
 class User extends Controller{
 
     public function index(){
+        /*$user  = UserModel::get(1);
+        dump($user->toArray());*/
+        //$user = UserModel::select();
 
+        $user = new UserModel();
+        /*$user->email = '41111156@qq.com';
+        $res = $user->save();*/
+
+        /*$res = $user->save([
+            'password' => md5('123')
+        ],['id' => 25]);*/
+
+        /*$res = $user->where([
+            'id' => 25
+        ])->update([
+            'username' => 'myname'
+        ]);*/
+
+        $res = $user->select();
+        dump($res);
     }
 
 
