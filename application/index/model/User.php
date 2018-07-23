@@ -26,14 +26,23 @@ class User extends Model{
     /**
         获取器的作用是在获取数据的字段值后自动进行处理
      */
-    protected  function getCreateTimeAttr($value){
+    protected  function getCreateTimeAttr($value,$data){
         return date('Y-m-d H:i:s',$value);
+    }
+
+    //不是数据表字段也能使用获取器
+    protected function getStatusAttr($value,$data){
+        $status = ['0' => '未读','1' => '已读'];
+        return $status[$data['status']];
     }
 
     protected  function getUpdateTimeAttr($value){
         return date('Y-m-d H:i:s',$value);
     }
 
+    protected function setPasswordAttr($value){
+        return md5($value);
+    }
     /**
         修改器的作用是可以在数据赋值的时候自动进行转换处理
      *  主要用于修改和删除

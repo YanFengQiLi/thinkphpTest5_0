@@ -25,7 +25,7 @@ class User extends Controller{
             'username' => 'myname'
         ]);*/
 
-        $res = $user->select();
+        $res = $user->all();
         dump($res);
     }
 

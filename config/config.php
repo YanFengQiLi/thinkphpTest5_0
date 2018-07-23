@@ -18,6 +18,7 @@ return [
         'route',
         'route_my'
     ],
+    //'default_return_type'    => 'json',
     //数据库配置
     'database'               => [
         // 数据库类型
