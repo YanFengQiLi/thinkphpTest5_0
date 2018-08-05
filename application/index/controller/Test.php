@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use app\index\model\UserMessage;
 use think\Controller;
 use app\index\model\User;
 use think\Db;
@@ -89,6 +90,41 @@ class Test extends Controller{
             ->setField('username','李梅');
         dump($user);
     }
+
+    //$resultSetType 属性应用
+    public function index5(){
+        $info = User::alias('U')
+            ->field('U.*,M.message')
+            ->join('__USER_MESSAGE__ M','M.u_id = U.id','left')
+            ->select();
+        $info = $info->toArray();
+        dump($info);
+    }
+
+
+    /**
+     * @return \think\response\Json
+     * @throws \think\exception\DbException
+     */
+    public function index6(){
+        //使用hasOne 关联模型进行查询
+        /*$data = User::get(function($query){
+            $query->where('id',1);
+        },'userInfo');*/
+
+
+        $data = User::with('userInfo')->select([1,2]);
+        return json($data);
+
+
+        //  关联新增
+        //User::userInfo()->save(['']);
+    }
+
+
+
+
+
 
 
 
