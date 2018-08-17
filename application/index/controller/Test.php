@@ -104,6 +104,8 @@ class Test extends Controller{
 
     /**
      * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
     public function indexRelationSelect(){
@@ -119,7 +121,8 @@ class Test extends Controller{
          *  使用 hasOne关联模型 查询多条数据，使用 with() 方法
          *  1、当 with 传递的是 string 类型，即 关联模型名称 ,只支持查询主键
          *  2、当 with 传递的是 array 类型
-         *        关联多个模型 【】
+         *        (1)、关联多个模型 [模型1,模型2,模型3...]
+         *        (2)、还可以，以 key=>value 形式传递 闭包查询  '关联模型名称' => 闭包查询
          */
         $data2 = User::with('userInfo')->select([1,2]);
         $data2 = User::with('userInfo')->select(function($query){
@@ -138,13 +141,20 @@ class Test extends Controller{
          *      1、使用 hasWhere() 进行查询
          *      2、hasWhere 参数：
          *          参数1：关联模型名称  参数2：查询条件(数组或闭包) 参数3 当前显示的模型的字段（不传则显示全部）
+         *      3、指定属性查询
          */
-        $data = User::hasWhere('userInfo',function($query){
+        $data3 = User::hasWhere('userInfo',function($query){
             $query->where('user_content','哈哈');
         },['username','email'])->find();
 
-
-        return json($data2);
+        $data3 = User::field('username,sex,email')
+                ->with(['userInfo' => function($query){
+                    $query->field('user_content')
+                        ->where('user_id1',1);;
+                }])->select(function($sel){
+                    $sel->where('username','哈哈1');
+                });
+        return json($data3);
 
 
     }
