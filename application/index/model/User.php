@@ -72,14 +72,20 @@ class User extends Model{
      * @return \think\model\relation\HasOne
      *  hasOne() 一对一关联
      * 注意：
+     * （1）、hasOne() 参数说明
      *     参数1： 要关联的模型名称   命名规范是驼峰法
      *     参数2： 关联模型的外键，tp5默认会已 当前模型名+ _ + id 的方式去找你userInfo的外键，
      *              如果没有找到会报错，所以如果不是 tp5 外键的命名，要指定外键
-     *
+     *     参数3： 关联模型的主键
+     *     参数4： 别名--现在已经被废弃
+     *     参数5： 链接类型：默认使用INNER 可支持，LEFT RIGHT FULL
+     * （2）、只获取关联模型的某些字段
+     *      使用 $this->hasOne()->field()
      *
      */
     public function userInfo(){
-            return $this->hasOne('userInfo','user_id1','','','left');
+            return $this->hasOne('userInfo','user_id1','','','right')
+                ->field('user_id1,user_content');
     }
 
 

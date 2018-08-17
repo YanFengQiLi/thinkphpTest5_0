@@ -106,19 +106,47 @@ class Test extends Controller{
      * @return \think\response\Json
      * @throws \think\exception\DbException
      */
-    public function index6(){
-        //使用hasOne 关联模型进行查询
-        /*$data = User::get(function($query){
+    public function indexRelationSelect(){
+        /**
+            使用hasOne 关联模型 查询1条数据
+         */
+        $data1 = User::get(function($query){
             $query->where('id',1);
-        },'userInfo');*/
+        },['userInfo']);
 
 
-        $data = User::with('userInfo')->select([1,2]);
-        return json($data);
+        /**
+         *  使用 hasOne关联模型 查询多条数据，使用 with() 方法
+         *  1、当 with 传递的是 string 类型，即 关联模型名称 ,只支持查询主键
+         *  2、当 with 传递的是 array 类型
+         *        关联多个模型 【】
+         */
+        $data2 = User::with('userInfo')->select([1,2]);
+        $data2 = User::with('userInfo')->select(function($query){
+            $query->where('id','in',[1,2]);
+        });
+        $data2 = User::with(['userInfo' => function($query){
+            $query->where('user_content','哈哈');
+        }])->select(function($query){
+            $query->where('sex',0);
+        });
 
 
-        //  关联新增
-        //User::userInfo()->save(['']);
+        /**
+         *  根据关联表的查询条件 查询当前模型的数据
+         *  注意：
+         *      1、使用 hasWhere() 进行查询
+         *      2、hasWhere 参数：
+         *          参数1：关联模型名称  参数2：查询条件(数组或闭包) 参数3 当前显示的模型的字段（不传则显示全部）
+         */
+        $data = User::hasWhere('userInfo',function($query){
+            $query->where('user_content','哈哈');
+        },['username','email'])->find();
+
+
+        return json($data2);
+
+
     }
 
 
