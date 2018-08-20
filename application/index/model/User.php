@@ -84,8 +84,8 @@ class User extends Model{
      *
      */
     public function userInfo(){
-            return $this->hasOne('userInfo','user_id1','','','right')
-                ->field('user_id1,user_content');
+            return $this->hasOne('userInfo','user_id','','','right')
+                ->field('user_id,user_content');
     }
 
 
