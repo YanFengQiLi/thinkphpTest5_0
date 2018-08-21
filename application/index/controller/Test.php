@@ -152,6 +152,7 @@ class Test extends Controller
         return json($data3);
     }
 
+
     /**
      * @throws \think\exception\DbException
      * @author zhenHong
@@ -175,6 +176,7 @@ class Test extends Controller
         $num = $user->userInfo->save(['user_content' => '拉拉']);
         dump($num);
     }
+
 
 
     /**
@@ -230,7 +232,5 @@ class Test extends Controller
         return json($list);
 
     }
-
-
 }
 
