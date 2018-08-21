@@ -155,17 +155,7 @@ class Test extends Controller{
                     $sel->where('username','哈哈1');
                 });
         return json($data3);
-
-
     }
-
-
-
-
-
-
-
-
-
+    
 }
 
