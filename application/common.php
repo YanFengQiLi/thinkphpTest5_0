@@ -10,3 +10,12 @@
 // +----------------------------------------------------------------------
 
 // 应用公共文件
+
+function dataResponse($code,$data,$message){
+    $data = [
+        'code' => $code,
+        'data' => $data,
+        'message' => $message
+    ];
+    return json($data);
+}
