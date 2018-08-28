@@ -1,13 +1,16 @@
 <?php
+
 namespace app\index\model;
+
 use think\Model;
 
-class User extends Model{
+class User extends Model
+{
 
     protected $table = 'think_user';
 
     /**
-    开启自动写入时间戳后，会自动判断你是更新还是写入操作
+     * 开启自动写入时间戳后，会自动判断你是更新还是写入操作
      * 自动的为你写入，对应的时间字段的时间戳
      * 需要注意是：
      *      更新方法必须使用save()方法
@@ -16,7 +19,7 @@ class User extends Model{
 
     protected $dateFormat = 'Y-m-d H:i:s';
     /**
-    如果你的时间戳不是tp5默认的时间字段，
+     * 如果你的时间戳不是tp5默认的时间字段，
      * 还是想要使用时间戳的自动写入，那么就要定义
      * 写入、更新的时间字段
      *
@@ -35,37 +38,45 @@ class User extends Model{
      */
     protected $resultSetType = 'collection';
 
+
    /* protected function getMessageAttr($value){
         return $value.'我是经过User模型处理之后的数据';
     }*/
 
+
     /**
-        获取器的作用是在获取数据的字段值后自动进行处理
+     * 获取器的作用是在获取数据的字段值后自动进行处理
      */
-    protected  function getCreateTimeAttr($value,$data){
-        return date('Y-m-d H:i:s',$value);
+    protected function getCreateTimeAttr($value, $data)
+    {
+        return date('Y-m-d H:i:s', $value);
     }
 
     //不是数据表字段也能使用获取器
-    protected function getStatusAttr($value,$data){
-        $status = ['0' => '未读','1' => '已读'];
+    protected function getStatusAttr($value, $data)
+    {
+        $status = ['0' => '未读', '1' => '已读'];
         return $status[$data['status']];
     }
 
-    protected  function getUpdateTimeAttr($value){
-        return date('Y-m-d H:i:s',$value);
+    protected function getUpdateTimeAttr($value)
+    {
+        return date('Y-m-d H:i:s', $value);
     }
 
     //修改器
-    protected function setPasswordAttr($value){
+    protected function setPasswordAttr($value)
+    {
         return md5($value);
     }
+
     /**
-        修改器的作用是可以在数据赋值的时候自动进行转换处理
+     * 修改器的作用是可以在数据赋值的时候自动进行转换处理
      *  主要用于修改和删除
      */
-    protected  function setEmailAttr($value){
-        return $value.'--'.'这是邮箱';
+    protected function setEmailAttr($value)
+    {
+        return $value . '--' . '这是邮箱';
     }
 
     /**
@@ -82,6 +93,10 @@ class User extends Model{
      *
      * （2）、只获取关联模型的某些字段
      *      使用 $this->hasOne()->field()
+     * （3）、关联模型的属性绑定（需要版本在 V5.0.4+）
+     *      使用 $this->hasOne()->bind('关联模型的字段名1,字段名2...')
+     * （4）、注意这里我起的 userInfo() 并不是非要和我的数据表名称对应，
+     *  和数据表名称对应的好处就是，显示的定义了 我当前模型与关联的模型
      *
      *  (3)、通过关联模型，绑定属性到父模型
      *      使用 $this->hasOne()->bind()
@@ -91,12 +106,13 @@ class User extends Model{
      *             一旦使用这种方式去关联，在查询时不能使用 with() 方法，否则报错 关联属性已经存在,
      *             正确做法：正常查询主表数据即可，关联模型的字段都会在主表字段里列出
      */
+
     public function userInfo(){
         //  常规写法
         /*return $this->hasOne('userInfo','user_id','','','right')
             ->field('user_id,user_content');*/
 
-        //  绑定字段到父模型
+        //  绑定字段到父模型 bind()可以传递
         return $this->hasOne('userInfo','user_id')
             ->bind([
                 'user_content',
@@ -112,12 +128,8 @@ class User extends Model{
         //  常规关联写法
         //return $this->hasOne('userMessage','u_id')->field('u_id,message');
 
-        //  将关联模型字段绑定到父模型   bind()可以传递
-        return $this->hasOne('userMessage','u_id')
-            ->bind([
-                'message_id' => 'id',
-                'msg'
-            ]);
+        //  将关联模型字段绑定到父模型
+        return $this->hasOne('userMessage','u_id')->field('msg');
     }
 
     public function ticket(){
@@ -130,7 +142,8 @@ class User extends Model{
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function testHasOneModel(){
+    public function testHasOneModel()
+    {
         //  根据关联模型的字段进行查询
         /*$info1 = $this->field(['password'],true)->with([
             'userInfo' => function($query){
@@ -144,13 +157,20 @@ class User extends Model{
 
 
         //  查询多个关联模型 where() 或者 select() 查询的对象都是主模型
-        $info2 = $this->with('userInfo,message')->where('username','哈哈1')->select();
+        $info2 = $this->with('userInfo,message')->where('username', '哈哈1')->select();
 
 
         //  这里是通过，将关联模型绑定到父模型
-        $info = $this->field(['password'],true)->select();
+        $info = $this->field(['password'], true)->select();
         return $info;
     }
 
-
+    /**
+     * @return \think\model\relation\HasMany
+     * @author zhenHong
+     * 一对多关联
+     */
+    public function userComments(){
+        return $this->hasMany('UserComment','user_id')->field('id,comment,click');
+    }
 }

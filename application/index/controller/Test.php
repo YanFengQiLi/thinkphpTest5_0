@@ -6,6 +6,7 @@ use app\index\model\UserMessage;
 use think\Controller;
 use app\index\model\User;
 use think\Db;
+use app\index\model\UserInfo;
 
 class Test extends Controller
 {
@@ -176,9 +177,69 @@ class Test extends Controller
         dump($num);
     }
 
-    public function tests(){
-        $user = new User();
-        return json($user->testHasOneModel());
+
+    /**
+     * @throws \think\exception\DbException
+     * @author zhenHong
+     * 相对关联
+     */
+    public function indexBelongsToUser(){
+        $infoObj = UserInfo::get(2);
+        //  获取全部 user 表的所有字段
+        $infoObj->user;
+        //  获取 user 表指定的字段
+        //$infoObj->user->email;
+        return json($infoObj);
+    }
+
+
+    /**
+     * @return \think\response\Json
+     * @throws \think\exception\DbException
+     * @author zhenHong
+     * 使用 绑定属性到父模型
+     */
+    public function indexHasOneBind(){
+        $user = User::get(function($query){
+            $query->where('id',1)->field('id,username');
+        },'userInfo');
+        return json($user);
+    }
+
+
+    public function indexHasMany(){
+        /**
+         *  查询 当前用户下的评论 注意这里 where 条件是 user_comments的条件
+         *  获取关联数据
+         */
+        /*$user = User::get(1);
+        $info = $user->userComments()->where('id',1)->select();
+        return json($info);*/
+
+
+
+        /**
+         *  根据关联模型条件查询当前模型数据
+         *   1、has()
+         *  参数1：关联模型名
+         *  参数2：比较操作符 或 查询数组
+         *  参数3：个数
+         *  参数4：关联表统计字段，默认 count(*)
+         *  打印 sql 我们发现 这个 has 方法实现就是 分组统计后在按条件查找：发表超过1个的用户
+         *
+         *  2、hasWhere()
+         *  参数1：关联模型名
+         *  参数2：查询条件（数组或者闭包）
+         *  参数3：指定返回的User表字段
+         */
+        /*$list = User::has('userComments','>=',1)->select(false);
+        return json($list);*/
+
+
+        /*$list = User::hasWhere('userComments',function($query){
+            $query->where('click','egt',0);
+        },['username','email','id'])->select();
+        return json($list);*/
     }
 }
 
