@@ -175,5 +175,10 @@ class Test extends Controller
         $num = $user->userInfo->save(['user_content' => '拉拉']);
         dump($num);
     }
+
+    public function tests(){
+        $user = new User();
+        return json($user->testHasOneModel());
+    }
 }
 
