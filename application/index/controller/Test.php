@@ -2,6 +2,7 @@
 
 namespace app\index\controller;
 
+use app\index\model\UserComment;
 use app\index\model\UserMessage;
 use think\Controller;
 use app\index\model\User;
@@ -145,10 +146,10 @@ class Test extends Controller
         }, ['username', 'email'])->find();
 
         $data3 = User::field('username,sex,email')->with(['userInfo' => function ($query) {
-                $query->field('user_content')->where('user_id', 1);
-            }])->select(function ($sel) {
-                $sel->where('username', '哈哈1');
-            });
+            $query->field('user_content')->where('user_id', 1);
+        }])->select(function ($sel) {
+            $sel->where('username', '哈哈1');
+        });
         return json($data3);
     }
 
@@ -183,7 +184,8 @@ class Test extends Controller
      * @author zhenHong
      * 相对关联
      */
-    public function indexBelongsToUser(){
+    public function indexBelongsToUser()
+    {
         $infoObj = UserInfo::get(2);
         //  获取全部 user 表的所有字段
         $infoObj->user;
@@ -199,15 +201,25 @@ class Test extends Controller
      * @author zhenHong
      * 使用 绑定属性到父模型
      */
-    public function indexHasOneBind(){
-        $user = User::get(function($query){
-            $query->where('id',1)->field('id,username');
-        },'userInfo');
+    public function indexHasOneBind()
+    {
+        $user = User::get(function ($query) {
+            $query->where('id', 1)->field('id,username');
+        }, 'userInfo');
         return json($user);
     }
 
 
-    public function indexHasMany(){
+    /**
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @author zhenhong~
+     * 一对多关联 hasMany 查询
+     */
+    public function indexHasMany()
+    {
         /**
          *  查询 当前用户下的评论 注意这里 where 条件是 user_comments的条件
          *  获取关联数据
@@ -215,8 +227,6 @@ class Test extends Controller
         /*$user = User::get(1);
         $info = $user->userComments()->where('id',1)->select();
         return json($info);*/
-
-
 
         /**
          *  根据关联模型条件查询当前模型数据
@@ -230,7 +240,7 @@ class Test extends Controller
          *  2、hasWhere()
          *  参数1：关联模型名
          *  参数2：查询条件（数组或者闭包）
-         *  参数3：指定返回的User表字段
+         *  参数3：指定返回的当前模型表字段
          */
         /*$list = User::has('userComments','>=',1)->select(false);
         return json($list);*/
@@ -240,6 +250,44 @@ class Test extends Controller
             $query->where('click','egt',0);
         },['username','email','id'])->select();
         return json($list);*/
+
+
+        /**
+         *  定义相对关联
+         *  查询当前模型的数据
+         */
+        /*$list = UserComment::hasWhere('user',function ($query){
+            $query->where('username','哈哈1');
+        })->select();
+        return json($list);*/
+    }
+
+    /**
+     * @throws \think\exception\DbException
+     * @auhtor  zhenhong~
+     * 注意：
+     *      1、$user->userComments() 返回关联模型对象
+     *      2、$user->userComments   返回关联模型数组对象
+     */
+    public function indexAddOrUpddateHasMany()
+    {
+        //  关联新增
+        /*$user = User::find(1);
+        $user->userComments()->save(['comment'=>'我更新了评论']);*/
+
+        //  批量新增
+        /*$user = User::find(1);
+        $user->userComments()->saveAll([
+            ['comment' => '评论1'],
+            ['comment' => '评论2'],
+        ]);*/
+
+        //  关联更新
+        $user = User::get(1);
+        $data = [];
+        foreach($user->userComments as $key => $val){
+            $data[$key] = $val->toArray();
+        }
     }
 }
 
