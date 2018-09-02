@@ -24,8 +24,8 @@ class User extends Model
      * 写入、更新的时间字段
      *
      */
-    protected $createTime = 'create_time';
-    protected $updateTime = 'update_time';
+    protected $createTime = 'create_time1';
+    protected $updateTime = 'update_time1';
 
     //追加属性
     protected $append = ['message'];
@@ -38,10 +38,10 @@ class User extends Model
      */
     protected $resultSetType = 'collection';
 
-    protected function getMessageAttr($value)
+    /*protected function getMessageAttr($value)
     {
         return $value . '我是经过User模型处理之后的数据';
-    }
+    }*/
 
     /**
      * 获取器的作用是在获取数据的字段值后自动进行处理
@@ -115,6 +115,6 @@ class User extends Model
      *
      */
     public function userComments(){
-        return $this->hasMany('UserComment','user_id')->field('id,comment');
+        return $this->hasMany('UserComment','user_id')->field('user_id,comment,create_time');
     }
 }
