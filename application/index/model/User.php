@@ -38,10 +38,14 @@ class User extends Model
      */
     protected $resultSetType = 'collection';
 
+
     /*protected function getMessageAttr($value)
     {
         return $value . '我是经过User模型处理之后的数据';
     }*/
+
+
+
 
     /**
      * 获取器的作用是在获取数据的字段值后自动进行处理
@@ -89,6 +93,7 @@ class User extends Model
      *     参数3： 关联模型的主键
      *     参数4： 别名--现在已经被废弃
      *     参数5： 链接类型：默认使用INNER 可支持，LEFT RIGHT FULL
+     *
      * （2）、只获取关联模型的某些字段
      *      使用 $this->hasOne()->field()
      * （3）、关联模型的属性绑定（需要版本在 V5.0.4+）
@@ -96,25 +101,80 @@ class User extends Model
      * （4）、注意这里我起的 userInfo() 并不是非要和我的数据表名称对应，
      *  和数据表名称对应的好处就是，显示的定义了 我当前模型与关联的模型
      *
+     *  (3)、通过关联模型，绑定属性到父模型
+     *      使用 $this->hasOne()->bind()
+     *      3.1 bind() 参数为字符串：'字段1,字段2....'
+     *      3.2 bind() 参数为数组：['字段别名' => '真实字段名', '真实字段名']
+     *      3.3 注意：
+     *             一旦使用这种方式去关联，在查询时不能使用 with() 方法，否则报错 关联属性已经存在,
+     *             正确做法：正常查询主表数据即可，关联模型的字段都会在主表字段里列出
      */
-    public function userInfo()
-    {
-        return $this->hasOne('userInfo', 'user_id', '', '', 'right')
-            ->field('user_id,user_content');
+
+    public function userInfo(){
+        //  常规写法
+        /*return $this->hasOne('userInfo','user_id','','','right')
+            ->field('user_id,user_content');*/
+
+        //  绑定字段到父模型 bind()可以传递
+        return $this->hasOne('userInfo','user_id')
+            ->bind([
+                'user_content',
+                'user_info_id' => 'id'
+            ]);
     }
 
-    public function userInfos()
-    {
-        return $this->hasOne('userInfo','user_id')->bind('user_content');
+    /**
+     * @return \think\model\relation\HasOne
+     * 消息模型
+     */
+    public function message(){
+        //  常规关联写法
+        //return $this->hasOne('userMessage','u_id')->field('u_id,message');
+
+        //  将关联模型字段绑定到父模型
+        return $this->hasOne('userMessage','u_id')->field('msg');
     }
 
+    public function ticket(){
+        return $this->belongsTo('Ticket','','id')->field('ticket');
+    }
+
+    /**
+     * @return false|\PDOStatement|string|\think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function testHasOneModel()
+    {
+        //  根据关联模型的字段进行查询
+        /*$info1 = $this->field(['password'],true)->with([
+            'userInfo' => function($query){
+                $query->where('user_content','啊啊');
+            },
+            'message' => function($query){
+                $query->where('msg','这是一条信息');
+            }
+        ])->where('username','哈哈1')
+        ->select();*/
+
+
+        //  查询多个关联模型 where() 或者 select() 查询的对象都是主模型
+        $info2 = $this->with('userInfo,message')->where('username', '哈哈1')->select();
+
+
+        //  这里是通过，将关联模型绑定到父模型
+        $info = $this->field(['password'], true)->select();
+        return $info;
+    }
 
     /**
      * @return \think\model\relation\HasMany
      * @author zhenHong
-     *
+     * 一对多关联
      */
     public function userComments(){
-        return $this->hasMany('UserComment','user_id')->field('user_id,comment,create_time');
+        //return $this->hasMany('UserComment','user_id')->field('user_id,comment,create_time');
+        return $this->hasMany('UserComment','user_id')->field('id,comment,click');
     }
 }

@@ -8,6 +8,7 @@ class UserComment extends Model
 {
     protected $table = 'think_user_comments';
 
+
     protected $dateFormat = 'Y-m-d H:i:s';
 
     protected $insert = ['user_id' => 1];
@@ -19,7 +20,9 @@ class UserComment extends Model
      * @author zhenHong
      *  定义相对关联-用户表
      */
-    public function user(){
+    public function user()
+    {
         return $this->belongsTo('user')->bind('username');
     }
+
 }
