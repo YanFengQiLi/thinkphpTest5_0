@@ -6,12 +6,17 @@ use app\index\model\Vue as VueModel;
 use app\index\model\VueNews;
 use think\Controller;
 use think\Request;
+use app\index\model\UserComment;
 
 header('Access-Control-Allow-Origin:*');
 
+/**
+ * Class Vue
+ * @package app\index\controller
+ * 路由规则：config/route.php中
+ */
 class Vue extends Controller
 {
-
     //查询记录
     public function index()
     {
@@ -89,5 +94,55 @@ class Vue extends Controller
         });
         $list['total'] = VueNews::count();
         return dataResponse(200, $list, '查询成功');
+    }
+
+    /**
+     * @param $id
+     * @return \think\response\Json
+     * @throws \think\exception\DbException
+     * @author zhenHong
+     * 新闻详情
+     */
+    public function vueNewsInfo($id)
+    {
+        $newInfo = VueNews::get($id);
+        return dataResponse($newInfo ? 200 : 201, $newInfo, '成功');
+    }
+
+    /**
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     * @author zhenHong
+     * 评论列表
+     */
+    public function vueUserComments(Request $request)
+    {
+        $param = $request->param();
+        $info = UserComment::with('user')->select(function ($query) use ($param) {
+            $query->where(['news_id' => $param['newsId']])
+                ->page($param['pageIndex'], 2)
+                ->order('create_time desc');
+        });
+        return dataResponse(200,$info,'成功');
+    }
+
+    /**
+     * @param Request $request
+     * @return \think\response\Json
+     * @author zhenHong
+     * 发表评论
+     */
+    public function vueAddComments(Request $request){
+        $data = $request->post();
+        $UserComment = new UserComment();
+        $num = $UserComment->save($data);
+        if($num){
+            return dataResponse(200,'','发表评论成功');
+        }else{
+            return dataResponse(201,'','发表评论失败');
+        }
     }
 }
