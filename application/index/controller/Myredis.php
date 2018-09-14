@@ -254,6 +254,11 @@ class Myredis extends Controller {
         }
     }
 
+    public function list_rPush(){
+        $redis = new  Myredis();
+        $num = $redis->originRedis->rPush('myGoodList','bottom1','bottom2');
+    }
+
     /**
      *  lPop('key')
      *
@@ -295,5 +300,96 @@ class Myredis extends Controller {
             return dataResponse(201,'','设置失败');
         }
     }
+
+    /**
+     * @return \think\response\Json
+     *  lPushx('key','value')
+     *
+     *  用途：
+     *      想已经存在的 列表的 队头 插入一个值
+     *      若该列表不存在，则操作失败
+     *  返回：
+     *      int 类型  1-成功  0-失败
+     */
+    public function list_lPushX(){
+        $redis = new Myredis();
+        $num = $redis->originRedis->lPushx('myGoods','good1');
+        if($num){
+            return dataResponse(200,$num,'设置成功');
+        }else{
+            return dataResponse(201,'','设置失败');
+        }
+    }
+
+    /**
+     * @return \think\response\Json
+     *
+     * lRange('key',start,end)  获取指定区间的列表元素,返回一个数组
+     *
+     * 偏移量的设置(以此类推)：
+     * 0 -- 第一个元素
+     * 1 -- 第二个元素
+     * ...
+     * -1 -- 最后一个元素
+     * -2 -- 倒数第二个元素
+     *
+     * 返回值：
+     *      若 key 不存在，则返回空数组
+     *      若 start 与 end 相同，则返回 当前位 的元素
+     *
+     */
+    public function list_lRange(){
+        $redis = new Myredis();
+        $arr = $redis->originRedis->lRange('myGoodList',-1,-1);
+        if($arr){
+            return dataResponse(200,$arr,'获取列表成功');
+        }else{
+            return dataResponse(201,'','设置失败');
+        }
+    }
+
+
+    /**
+     * @return \think\response\Json
+     *
+     *  lRem('key','value',count)   寻找指定 key 的列表，移除 指定 count 的数量 的 value
+     *
+     *  注意 count 参数：
+     *     1、count > 0 从队头，开始查找
+     *     2、count < 0 从队尾，开始查找
+     *     3、count = 0 移除
+     */
+    public function list_lRem(){
+        $redis = new Myredis();
+        $num = $redis->originRedis->lRem('myGoodList','shirt',-3);
+        if($num){
+            return dataResponse(200,$num,'移除列表元素成功');
+        }else{
+            return dataResponse(201,'','移除列表元素失败');
+        }
+    }
+
+
+    /**
+     * @return \think\response\Json
+     *
+     * lSet('key',index,'value')  根据 key 查找对应的列表，在根据 index(索引) 查找list里元素所在的位置，并重新设置其值
+     *
+     *  返回值：
+     *      1、成功返回 true ，否则 返回 false
+     *      2、可以 重复更改 相同的 list 且 更改相同的 index 以及设置相同的 value ，不会报错
+     *
+     */
+    public function list_LSet(){
+        $redis = new Myredis();
+        $res = $redis->originRedis->lSet('myGoodList',1,'pants2');
+        if($res){
+            return dataResponse(200,$res,'设置列表元素成功');
+        }else{
+            return dataResponse(201,'','设置列表元素失败');
+        }
+    }
+
+
 
 }
