@@ -3,9 +3,11 @@
 namespace app\index\model;
 
 use think\Model;
+use traits\model\SoftDelete;
 
 class User extends Model
 {
+    use SoftDelete;
 
     protected $table = 'think_user';
 
@@ -26,6 +28,14 @@ class User extends Model
      */
     protected $createTime = 'create_time1';
     protected $updateTime = 'update_time1';
+
+    //  定义软删除的属性字段
+    protected $deleteTime = 'delete_time';
+
+    //  类型转换
+    protected $type = [
+        'delete_time' => 'datetime'
+    ];
 
     //追加属性
     protected $append = ['message'];

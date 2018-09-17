@@ -98,6 +98,40 @@ class Test extends Controller
         dump($info);
     }
 
+/**************************************  软删除  *************************************************/
+
+    //  软删除 与 真实删除
+    public function testSoftDelete(){
+        // 软删除
+        $res = User::destroy(1);
+        dump($res);
+        // 真实删除
+        /*User::destroy(1,true);
+        $user = User::get(1);
+        // 软删除
+        $user->delete();
+        // 真实删除
+        $user->delete(true);*/
+    }
+
+    //  软删除 数据查询
+    public function testSelectSoftDelete(){
+        header('Content-type:text/html;charset=UTF-8');
+        //  带有软删除 数据的查询
+        //$res = User::withTrashed()->find(1);
+
+        //User::withTrashed()->select();
+
+        //  只查询 软删除的数据
+        //$res = User::onlyTrashed()->find();
+
+        $res = User::onlyTrashed()->select();
+        dump($res);die;
+    }
+
+
+/**************************************  关联模型  *************************************************/
+
 
     /**
      * @return \think\response\Json
@@ -269,7 +303,7 @@ class Test extends Controller
      *      1、$user->userComments() 返回关联模型对象
      *      2、$user->userComments   返回关联模型数组对象
      */
-    public function indexAddOrUpddateHasMany()
+    public function indexAddOrUpdateHasMany()
     {
         //  关联新增
         /*$user = User::find(1);

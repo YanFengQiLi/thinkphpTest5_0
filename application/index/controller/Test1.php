@@ -1,75 +1,91 @@
 <?php
 namespace app\index\controller;
 
-use app\index\model\Users;
+use app\index\model\Users as User;
 use think\Controller;
 use think\Db;
 
 class Test1 extends Controller{
-    public function index(){
-        $user = new Users();
-        $arr = [
-            'username' => '哈哈11',
-            'password' => md5('123'),
-            'email' => '123@qq.com',
-            'mobile' => 466,
-        ];
-        $res = $user->save($arr);
+
+    //  软删除 与 真实删除
+    public function testSoftDelete(){
+        // 软删除
+        $res = User::destroy(1);
         dump($res);
+        // 真实删除
+        /*User::destroy(1,true);
+
+
+
+        $user = User::get(1);
+        // 软删除
+        $user->delete();
+        // 真实删除
+        $user->delete(true);*/
     }
 
-    //获取器
-    public function index2(){
-        $user = new Users();
-        $info = $user->find(1);
+    //  软删除 数据查询
+    public function testSelectSoftDelete(){
+        header('Content-type:text/html;charset=UTF-8');
+        //  带有软删除 数据的查询
+        //$res = User::withTrashed()->find(1);
+
+        //User::withTrashed()->select();
+
+        //  只查询 软删除的数据
+        //$res = User::onlyTrashed()->find();
+
+        $res = User::onlyTrashed()->select();
+        dump($res);die;
+    }
+
+    //  hasOne查询一条数据
+    public function testUserInfoOne(){
+        $data = User::get(function ($query) {
+            $query->where('id', 2);
+        }, ['userInfo']);
+        return json($data);
+    }
+
+    /**
+     *  hasOne 查询多条记录的三种写法
+     *
+     *  注意 这里的where条件是当前模型的条件
+     */
+    public function testUserInfoMoreWith(){
+
+        $data = User::with('userInfo')->select([2, 3]);
+
+
+        $data = User::with('userInfo')->select(function ($query) {
+            $query->where('id', 'in', [2, 3]);
+        });
+
+        $data = User::with(['userInfo' => function ($query) {
+            $query->where('user_content', '拉拉');
+        }])->select(function($query){
+            $query->where('username','test3');
+        });
+
+        return json($data);
+
+    }
+
+    //  一对多关联
+    public function testUserComments(){
+        //  用户id = 2 的评论
+        $user = User::get(2);
+        $info = $user->userComments()->select();
+
+        //$info = $user->userComments()->whereTime('create_time','>','2018-07-16')->select();
         return json($info);
     }
 
-    //修改器
-    public function index3(){
-        $user = new Users();
-        $arr = [
-            'username' => '哈哈11',
-            'email' => '123@qq.com',
-            'password' => '123456',
-            'mobile' => 466,
-        ];
-        $res = $user->save($arr);
-        dump($res);
+    public function testUserInfoMoreHasWhere(){
+
     }
 
-    //1532425343
-    public function index4(){
-        /*$res = Db::name('User')
-            ->where('id',30)
-            ->update([
-                'username' => '222'
-            ]);*/
 
-        $user = new Users();
-        $res = $user->save(['username'=>'666'],['id' => 30]);
-        dump($res);
-    }
 
-    public function index5(){
-        $info  = Db::name('user')
-            ->alias('a')
-            ->field('a.username,w.message,a.id')
-            ->join('__USER_MESSAGE__ w','a.id = w.user_id')
-            ->select();
-        dump($info);
-    }
 
-    public function index6(){
-        //$user = Users::get(1);
-
-        //$user = Db::name('User')->find(1);
-
-        //$user = Db::name('User')->where('id',1)->value('username');
-
-        $user = Db::name('User') ->where('id',1)
-            ->setField('username','张三');
-
-        dump($user);
-    }
 }
