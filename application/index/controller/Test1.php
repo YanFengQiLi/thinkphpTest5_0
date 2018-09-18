@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use app\index\model\UserComment;
 use app\index\model\Users as User;
 use think\Controller;
 use think\Db;
@@ -49,26 +50,29 @@ class Test1 extends Controller{
 
     /**
      *  hasOne 查询多条记录的三种写法
-     *
-     *  注意 这里的where条件是当前模型的条件
+     *  查询当前模型
      */
     public function testUserInfoMoreWith(){
 
         $data = User::with('userInfo')->select([2, 3]);
-
 
         $data = User::with('userInfo')->select(function ($query) {
             $query->where('id', 'in', [2, 3]);
         });
 
         $data = User::with(['userInfo' => function ($query) {
-            $query->where('user_content', '拉拉');
-        }])->select(function($query){
-            $query->where('username','test3');
-        });
+            $query->where('user_content', '嘿嘿');
+        }])->where('username','test3')->select();
 
         return json($data);
 
+    }
+
+    //  关联模型 与 bind()
+    public function testUserInfoBind(){
+        $data = User::get(2, 'userInfo2');
+
+        return json($data);
     }
 
     //  一对多关联
@@ -81,9 +85,24 @@ class Test1 extends Controller{
         return json($info);
     }
 
-    public function testUserInfoMoreHasWhere(){
-
+    //  关联模型 与 has()
+    public function testUserCommentsHas(){
+        $list = User::has('userComments','>=',3)->select();
+       return json($list);
     }
+
+    //  关联模型 与 hasWhere()
+    public function testUserCommentsHasWhere(){
+        $info = User::hasWhere('userInfo',['user_content' => '嘿嘿'])->find();
+
+        /*$info = User::hasWhere('userComments',function($query){
+            $query->where('UserComment.id','gt','3');
+        },['username','email','id'])->select();*/
+
+        return json($info);
+    }
+
+
 
 
 
