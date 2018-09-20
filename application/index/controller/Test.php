@@ -323,5 +323,29 @@ class Test extends Controller
             $data[$key] = $val->toArray();
         }
     }
+
+
+    /**
+     * @return \think\response\Json
+     * @throws \think\exception\DbException
+     * 获取 该用户的所有角色
+     */
+    public function findManyToMany(){
+        $user = User::get(1);
+        return json($user->role);
+    }
+
+    /**
+     * @throws \think\exception\DbException
+     * 多对多新增：
+     *      1、save 中的数组是 role 的字段
+     *      2、这样会将 向 role 表插入一条新数据
+     *      3、并且向中间表，插入二者的关联数据
+     */
+    public function addManyToMany(){
+        $user = User::get(1);
+        $num = $user->role()->save(['role_name' => '宿管']);
+        dump($num);
+    }
 }
 

@@ -1,6 +1,7 @@
 <?php
 return [
     'app_debug'              => true,
+    'show_error_msg'         => true,
     /*
      *  普通模式(默认)
      *      url_route_on：false
