@@ -187,4 +187,24 @@ class User extends Model
         //return $this->hasMany('UserComment','user_id')->field('user_id,comment,create_time');
         return $this->hasMany('UserComment','user_id')->field('id,comment,click');
     }
+
+
+    /**
+     * @return \think\model\relation\BelongsToMany
+     * @author zhenhong
+     * 多对多 关联
+     * 参数：
+     *      1、关联模型名
+     *      2、中间模型名,这个是必须存在的，否则报错
+     *      3、关联外键名，默认 关联模型名 + _ + id
+     *      4、当前模型的关联键，默认 当前模型名 + _ + id
+     *
+     * 理解：
+     *      多个用户对应1个角色，而1个用户也可以拥有多个角色，所以需要有一个中间表把他们两者关联起来，
+     * 而这个中间表，就分别记录了 用户 与 角色表的id
+     *
+     */
+    public function role(){
+        return $this->belongsToMany('Role','UserRole','role_id','user_id');
+    }
 }
