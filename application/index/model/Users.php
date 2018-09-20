@@ -22,15 +22,15 @@ class Users extends Model{
         'delete_time' => 'datetime'
     ];*/
 
-    //  hasOne()
+    //  hasOne():   user_info
     public function userInfo(){
         return $this->hasOne('userInfo','user_id','id')
             ->field('user_id,user_content');
     }
 
-    //  hasMany()
-    public function userComments(){
-        return $this->hasMany('userComment','user_id','id')->field('id,user_id,comment,create_time');
+    // hasOne():    user_message
+    public function userMessage(){
+        return $this->hasOne('UserMessage','user_id','id')->field('user_id,message');
     }
 
     //  绑定字段到父模型 bind()可以传递
@@ -41,6 +41,13 @@ class Users extends Model{
                 'user_info_id' => 'id'
             ]);
     }
+
+    //  hasMany():  user_comments
+    public function userComments(){
+        return $this->hasMany('userComment','user_id','id')->field('id,user_id,comment,create_time');
+    }
+
+
 
 
 }
