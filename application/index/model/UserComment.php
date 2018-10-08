@@ -11,7 +11,7 @@ class UserComment extends Model
 
     protected $dateFormat = 'Y-m-d H:i:s';
 
-    protected $insert = ['user_id' => 1];
+    protected $insert = ['news_id' => 1];
 
     protected $autoWriteTimestamp = true;
 

@@ -5,8 +5,12 @@ use think\Model;
 use traits\model\SoftDelete;
 
 class UserInfo extends Model{
+    use SoftDelete;
 
     protected $table = 'think_user_info';
+
+    protected $deleteTime = 'delete_time';
+
 
     /**
      * @return \think\model\relation\BelongsTo

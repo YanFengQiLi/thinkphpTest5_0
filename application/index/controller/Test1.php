@@ -171,13 +171,29 @@ class Test1 extends Controller
         }
     }
 
-    //  关联删除    注意:5.0.5版本
+    //  关联删除    注意:5.1版本 目前 5.0.* 只能删除主表
     public function testUserInfoDel(){
-        $user = User::get(6);
-        $num = $user->together('userInfo')->delete();
-        if(!empty($num)){
-            return json('删除成功');
-        }
+        $user = User::get(1);
+        $user->together('userInfo')->delete();
+        return json('删除成功');
+    }
+
+    //  关联新增 (一对多)
+    public function testUserCommentInsert(){
+        $user = User::get(2);
+
+        $user->userComments()->saveAll([
+            ['comment' => '评论1'],
+            ['comment' => '评论2'],
+            ['comment' => '评论3'],
+        ]);
+
+        return json('插入成功');
+    }
+
+    //  关联更新(一对多)
+    public function testUserCommentSave(){
+
     }
 
 
