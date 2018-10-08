@@ -14,27 +14,28 @@ class Test1 extends Controller
     public function testSoftDelete()
     {
         // 软删除
-        $res = User::destroy(6);
-        dump($res);
+        $res = User::destroy(10);
+
         // 真实删除
-        /*User::destroy(7,true);
+        //$res = User::destroy(7,true);
 
 
 
-        $user = User::get(8);
+        $user = User::get(9);
         // 软删除
-        $user->delete();
+        //$user->delete();
+
         // 真实删除
-        $user->delete(true);*/
+        //$user->delete(true);
     }
 
     //  软删除 数据查询
     public function testSelectSoftDelete()
     {
         //  带有软删除 数据的查询
-        //$res = User::withTrashed()->find(1);
+        $res = User::withTrashed()->find(1);
 
-        //$res = User::withTrashed()->select();
+        $res = User::withTrashed()->select();
 
         //  只查询 软删除的数据
         //$res = User::onlyTrashed()->find();
@@ -90,16 +91,17 @@ class Test1 extends Controller
     {
         //  用户id = 2 的评论
         $user = User::get(2);
-        $info = $user->userComments()->select();
+        //$info = $user->userComments()->select();
 
-        //$info = $user->userComments()->whereTime('create_time','>','2018-07-16')->select();
+        $info = $user->userComments()->whereTime('create_time','>','2018-07-16')->select();
         return json($info);
     }
 
     //  关联模型 与 has() 看sql
     public function testUserCommentsHas()
     {
-        $list = User::has('userComments', '>=', 3)->select();
+        $list = User::has('userComments', '>', 3)->select();
+        //echo User::getLastSql();die;
         return json($list);
     }
 
@@ -107,7 +109,7 @@ class Test1 extends Controller
     public function testUserCommentsHasWhere()
     {
         $info = User::hasWhere('userInfo', ['user_content' => '嘿嘿'],['id','username'])->find();
-
+        echo User::getLastSql();die;
         /*$info = User::hasWhere('userComments',function($query){
             $query->where('UserComment.id','gt','3');
         },['username','email','id'])->select();*/
