@@ -9,10 +9,11 @@ class Users extends Model{
 
     protected $table = 'think_user';
     protected $autoWriteTimestamp = true;
-    protected $createTime = 'create_time1';
-    protected $updateTime = 'update_time1';
+    protected $createTime = 'create_time';
+    protected $updateTime = 'update_time';
     protected $dateFormat = 'Y-m-d H;i:s';
     protected $hidden = ['password'];
+    protected $insert = ['password'];
 
 
     protected $deleteTime = 'delete_time';
@@ -21,6 +22,10 @@ class Users extends Model{
     /*protected $type = [
         'delete_time' => 'datetime'
     ];*/
+
+    protected function setPasswordAttr($value){
+        return md5($value);
+    }
 
     //  hasOne():   user_info
     public function userInfo(){

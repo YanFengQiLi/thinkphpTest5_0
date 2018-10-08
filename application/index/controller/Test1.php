@@ -115,5 +115,68 @@ class Test1 extends Controller
         return json($info);
     }
 
+    /** ******************************* 第三次 *************************************** */
+
+    //  关联新增    情况1：主表 与 关联表同时插入
+    public function testUserInfoInsert1(){
+        $userData = [
+            'username' => '李梅',
+            'password' => '123',
+            'mobile' => '123',
+            'email' => '123@qq.com'
+        ];
+        $user = new User();
+        $res1 = $user->save($userData);
+        $res2 = $user->userInfo()->save([
+            'user_content' => '啦啦'
+        ]);
+        if($res1 && $res2){
+            return json('新增成功');
+        }else{
+            return json('新增失败');
+        }
+    }
+
+    //  关联新增    情况2：已知主表，插入关联表
+    public function testUserInfoInsert2(){
+        $user = User::get(3);
+        $res = $user->userInfo()->save([
+            'user_content' => '我是第3条数据'
+        ]);
+        if(!empty($res)){
+            return json('新增成功');
+        }
+    }
+
+    //  关联修改
+    public function testUserInfoSave(){
+        //  写法1、
+        /*$user = User::get(1);
+        $user->userInfo->user_content = '我修改了';
+        $num = $user->userInfo->save();*/
+
+
+
+        //  写法2、
+        $user = User::get(1);
+        $num = $user->userInfo->save([
+            'user_content' => '修改111'
+        ]);
+
+
+        if(!empty($num)){
+            return json('修改成功');
+        }
+    }
+
+    //  关联删除    注意:5.0.5版本
+    public function testUserInfoDel(){
+        $user = User::get(6);
+        $num = $user->together('userInfo')->delete();
+        if(!empty($num)){
+            return json('删除成功');
+        }
+    }
+
 
 }
