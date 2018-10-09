@@ -193,8 +193,77 @@ class Test1 extends Controller
 
     //  关联更新(一对多)
     public function testUserCommentSave(){
+        $user = User::get(1);
 
+        $data = [];
+        foreach($user->userComments as $key => $val){
+            $data[$key]['id'] = $val['id'];
+            $data[$key]['create_time'] = time();
+        }
+
+        $comment = new UserComment();
+        $bool = $comment->isUpdate(true)->saveAll($data);
+
+        if(!empty($bool)){
+            return json('修改成功');
+        }
     }
+
+
+
+    //  多对多关联   查询
+    public function testUserRoleSelect1(){
+        $user = User::get(1);
+
+        $data = [];
+        //  获取 关联表 以及 中间表 数据
+        foreach($user->role as $role){
+            $data[] = $role;
+        }
+        return json($data);
+    }
+
+    //  多对多关联   新增1条（关联表与中间表同时新增）
+    public function testUserRoleInsertOne(){
+        $user = User::get(1);
+
+        //  注意：这里的 save() 方法是belongsToMany 类的内置方法
+        $user->role()->save([
+            'role_name' => '数学老师'
+        ],[
+            'create_time' => time(),
+            'update_time' => time()
+        ]);
+
+        return '添加成功';
+    }
+
+    //  多对多关联   批量新增
+    public function testUserRoleInsertMany(){
+        $user = User::get(3);
+
+        $user->role()->saveAll([
+            ['role_name' => '语文老师'],
+            ['role_name' => '体育老师'],
+        ],[
+            'create_time' => time(),
+            'update_time' => time()
+        ],true);
+
+        return '添加成功';
+    }
+
+
+    //  多对多关联   只新增中间表数据
+    public function testUserRoleInsertMid(){
+        $user = User::get(2);
+
+        $user->role()->save(21);
+
+        return '添加成功';
+    }
+
+
 
 
 }

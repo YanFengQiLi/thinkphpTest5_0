@@ -337,15 +337,59 @@ class Test extends Controller
 
     /**
      * @throws \think\exception\DbException
-     * 多对多新增：
+     * 多对多新增1条数据：
      *      1、save 中的数组是 role 的字段
      *      2、这样会将 向 role 表插入一条新数据
      *      3、并且向中间表，插入二者的关联数据
+     *
+     *  注意：
+     *      1、多对多插入时，这个 save() 方法是 belongsToMany 类的 内置方法，并不是 Model 类的 save() 方法
+     *      所以即使你创建了，中间表的模型，开启了时间戳的自动写入，也不会生效。
+     *      2、但是查看源码得知： belongsToMany 类的 save() 方法，有第二个参数，传入插入中间表的其他参数
+     *
      */
     public function addManyToMany(){
         $user = User::get(1);
-        $num = $user->role()->save(['role_name' => '宿管']);
+        $num = $user->role()->save([
+            'role_name' => '宿管'
+        ],[
+            'create_time' => time(),
+            'update_time' => time()
+        ]);
         dump($num);
+    }
+
+    /**
+     * @return string
+     * @throws \think\exception\DbException
+     * 多对多关联   批量新增（关联表 与 中间表同时新增）
+     */
+    public function UserRoleInsertMany(){
+        $user = User::get(3);
+
+        $user->role()->saveAll([
+            ['role_name' => '语文老师'],
+            ['role_name' => '体育老师'],
+        ],[
+            'create_time' => time(),
+            'update_time' => time()
+        ],true);
+
+        return '添加成功';
+    }
+
+    /**
+     * @return string
+     * @throws \think\exception\DbException
+     * 多对多关联   只新增中间表数据
+     * 插入 user_id = 2 且 role_id = 21 到中间表
+     */
+    public function UserRoleInsertMid(){
+        $user = User::get(2);
+
+        $user->role()->save(21);
+
+        return '添加成功';
     }
 }
 

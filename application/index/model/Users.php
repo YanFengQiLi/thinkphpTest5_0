@@ -53,6 +53,12 @@ class Users extends Model{
     }
 
 
+    /****************  第三次 ***********************/
+    public function role(){
+        return $this->belongsToMany('Role','UserRole','role_id','user_id');
+    }
+
+
 
 
 }
