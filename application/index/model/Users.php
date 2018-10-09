@@ -29,9 +29,9 @@ class Users extends Model{
 
     //  hasOne():   user_info
     public function userInfo(){
-    return $this->hasOne('userInfo','user_id','id')
-        ->field('user_id,user_content');
-}
+        return $this->hasOne('userInfo','user_id','id')
+            ->field('user_id,user_content');
+    }
 
     // hasOne():    user_message
     public function userMessage(){

@@ -264,6 +264,30 @@ class Test1 extends Controller
     }
 
 
+    //  动态属性
+    public function testModelAttribute(){
+        $user = User::get(1);
 
+        //return json($user->userInfo);
+
+        //  获取关联模型的动态属性
+        //echo $user->userInfo->user_content;
+
+
+        //  利用关联的动态属性，添加数据
+        $num = $user->userInfo->save([
+            'user_content' => '123'
+        ]);
+
+
+        //  更新关联模型的动态属性
+        /*$user->userInfo->user_content = '哈哈';
+
+        $num = $user->userInfo->save();*/
+
+        if($num){
+            return '成功';
+        }
+    }
 
 }
