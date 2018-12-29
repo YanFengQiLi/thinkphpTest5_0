@@ -63,4 +63,21 @@ return [
         // 是否需要进行SQL性能分析
         'sql_explain'     => false,
     ],
+    'myRedis' => [
+        'host' => '127.0.0.1',
+        //  redis 默认的端口号
+        'port' => 6379,
+        //  redis 密码
+        'password' => '',
+        //  选择数据库 默认为0  命令用于切换到指定的数据库，数据库索引号 index 用数字值指定，以 0 作为起始索引值
+        'select' => 0,
+        //  设置 链接超时时间 以秒为单位
+        'timeout' => 0,
+        //  设置过期时间 以毫秒为单位
+        'expire' => 0,
+        //  定义是否为持久链接
+        'persistent' => false,
+        //  用作存储会话的Redis密钥的前缀
+        'prefix' => ''
+    ]
 ];
